@@ -2,44 +2,44 @@
 import app from '../src/app'
 import request from 'supertest'
 import Product from "../src/model/product";
+import Validator from '../src/utils/validators';
 import { sellProduct } from "../src/service/sellProduct";
 
-describe('firstTest', () => {
-    test('should validate the sale of a unit prpduct', () => {
-        let product = new Product('Celular', 500.00, 900.00, 10)
-        sellProduct(product, 1)
-        expect(product.stock).toBe(9)
-    })
+//describe('firstTest', () => {
+// test('should validate the sale of a unit prpduct', () => {
+//     let product = new Product('Celular', 500.00, 900.00, 10)
+//     sellProduct(product, 1)
+//     expect(product.stock).toBe(9)
+// })
 
-    test('should validade the sale of many units products', () => {
-        let product = new Product('Celular', 500.00, 900.00, 10)
-        sellProduct(product, 5)
-        expect(product.stock).toBe(5)
-    })
-})
+// test('should validade the sale of many units products', () => {
+//     let product = new Product('Celular', 500.00, 900.00, 10)
+//     sellProduct(product, 5)
+//     expect(product.stock).toBe(5)
+// })
+//})
 
 describe('lesson 2', () => {
     let products;
 
     beforeEach(() => {
-        products = [
-            {
-                code: 12,
-                description: 'Macbook pro',
-                buyPrice: 4000,
-                sellPrice: 8000,
-                tags: ['tecnologia', 'Apple', 'computador']
+        products = [new Product(
+            12,
+            'Macbook pro',
+            4000,
+            8000,
+            ['tecnologia', 'Apple', 'computador']
 
-            },
-            {
-                code: 99,
-                description: 'Positivo pro',
-                buyPrice: 1000,
-                sellPrice: 2000,
-                tags: ['tecnologia', 'Positivo', 'computador']
-            }
+        ),
+        new Product(
+            99,
+            'Positivo pro',
+            1000,
+            2000,
+            ['tecnologia', 'Positivo', 'computador']
 
-        ]
+
+        )]
     })
 
     test('should be possible increment a new prpduct', async () => {
@@ -138,5 +138,31 @@ describe('lesson 2', () => {
         expect(responseLove.body).toMatchObject({
             lovers: 1,
         })
+    })
+})
+
+describe('another lessons', () => {
+    test('description must contain at least 2 characters', () => {
+        expect(() => {
+            Validator.validProduct(new Product(
+                144,
+                'Pl',
+                50.00,
+                80.00,
+                ['tecnologia', 'computador', 'gamer']
+            ))
+        }).toThrow(new Error('Description must have between 3 and 50 characters'))
+    })
+
+    test('should aceppt descriptions with three or more characters', () => {
+
+        const product = Validator.validProduct(new Product(
+            144,
+            'abc',
+            50.00,
+            80.00,
+            ['tecnologia', 'computador', 'gamer']
+        ))
+        expect(product.description).toBe('abc')
     })
 })

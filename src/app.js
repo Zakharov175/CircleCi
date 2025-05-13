@@ -3,7 +3,8 @@
 /* eslint-disable no-return-assign */
 import express from 'express';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
+import Product from './model/product';
+// import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 
@@ -19,18 +20,19 @@ app.get('/products', (request, response) => {
 
 app.post('/products', (request, response) => {
     // TODO: Save product in array products
-    const { code, description, buyPrice, sellPrice, tags } = request.body
+    const { code, description, buyPrice, sellPrice, tags, id } = request.body
     const onlyProduct = products.find((product) => product.code === code)
     const lov = onlyProduct ? onlyProduct.lovers : 0
-    const product = {
-        id: uuidv4(),
-        code,
-        description,
-        buyPrice,
-        sellPrice,
-        tags,
-        lovers: lov,
-    }
+    let product = new Product(code, description, buyPrice, sellPrice, tags, lov, id)
+    // const product = {
+    //     id: uuidv4(),
+    //     code,
+    //     description,
+    //     buyPrice,
+    //     sellPrice,
+    //     tags,
+    //     lovers: lov,
+    // }
     products.push(product)
     response.status(201).json(product)
 });
@@ -38,29 +40,30 @@ app.post('/products', (request, response) => {
 app.put('/products/:id', (request, response) => {
 
     const { id } = request.params;
-    const product = products.find(p => p?.id === id);
+    const finderProduct = products.find(p => p?.id === id);
 
-    if (!product) {
+    if (!finderProduct) {
         return response.status(400).send('Product does not exist');
     }
     const { description, buyPrice, sellPrice, tags } = request.body;
-    product.description = description;
-    product.buyPrice = buyPrice;
-    product.sellPrice = sellPrice;
-    product.tags = tags;
+    finderProduct.description = description;
+    finderProduct.buyPrice = buyPrice;
+    finderProduct.sellPrice = sellPrice;
+    finderProduct.tags = tags;
 
-    response.json(product);
+    response.json(finderProduct);
 });
 
 app.delete('/products/:code', (request, response) => {
     // TODO: Remove all products with code  in params
     const { code } = request.params;
-    const index = products.findIndex((v) => v.code == code);
+    const codeFormated = Number(code)
+    const index = products.findIndex((v) => v.code === codeFormated);
 
     if (index == -1) {
         response.status(400).send();
     } else {
-        products = products.filter((v) => v.code != code);
+        products = products.filter((v) => v.code !== codeFormated);
         response.status(204).send();
     }
 });
