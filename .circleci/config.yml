@@ -1,0 +1,17 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - run:
+          name: Instalar dependências
+          command: npm install
+      - run:
+          name: Executar testes
+          command: npm test
+workflows:
+  build_and_test:
+    jobs:
+      - build
